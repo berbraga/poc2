@@ -1,56 +1,90 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div>
+    <h1 style='font-size: 3.2em; font-family: cursive;'><b>Agora.io</b></h1>
+    <button @click="this.enterProfessional()" style='width: 200px; margin: 10px'>Entrar/Fechar Profissional</button>
+    <button @click="this.enterClient()" style='width: 200px'>Entrar/Fechar Cliente</button>
+  </div>
+  
+  <div v-if="this.open === true"> 
+    <div class="outside"> 
+      <div class="player">
+        <!-- player do video -->
+        <iframe width="1280" height="720" src="https://www.youtube.com/embed/KCc4TEbZCmc" title="O TRANSMISSOR de RÁDIO MAIS SIMPLES do MUNDO!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="professional">
+          <!-- player DA CAMERA do PROFISSIONAL -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-else style="display:none;"> 
+    <div class="outside"> 
+      <div class="player">
+        <!-- player do video -->
+        <iframe width="1886" height="760" src="https://www.youtube.com/embed/KCc4TEbZCmc" title="O TRANSMISSOR de RÁDIO MAIS SIMPLES do MUNDO!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="professional">
+          <!-- player DA CAMERA do PROFISSIONAL -->
+          <iframe width="200" height="200" src="https://www.youtube.com/embed/zIQ5gjErAyQ" title="Inclusão. Vídeo em Libras.Com legenda e áudio." frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import {Url} from '../Url.js'
+import AgoraRTC from "agora-rtc-sdk";
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
+  components:{
+    Url,
+  },
+  data(){
+    return{
+      open: false,    
+    }
+  },
+  
+  methods: {
+    enterProfessional() {
+      // fetch(Url)
+      // .then()
+      // .catch()
+      
+    },
+    
+    enterClient() {
+      this.open= !this.open
+    }
+  },
+
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+  .outside {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+  }
+  .player {
+    border: 1px black solid;
+    display: flex;
+    align-content: center;
+    justify-content: flex-end;
+    align-items: flex-end;
+    width: 1280px;
+    height: 720px;
+    border-width: 2px;
+    border-radius: 4px;
+  }
+   .professional {
+    position: absolute;
+    border: 2px whitesmoke solid;
+    width: 200px;
+    height: 200px;
+    border-width: 2px;
+    border-radius: 6px;
+  }
+
+
 </style>
