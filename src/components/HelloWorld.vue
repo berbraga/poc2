@@ -20,14 +20,12 @@
 </template>
 
 <script>
-import {Url} from '../Url.js'
+
 import AgoraRTC from "agora-rtc-sdk";
-import {T} from '../Functions.js';
+
 
 export default {
-  components:{
-    Url,
-  },
+
   data(){
     return{
       open: false,
@@ -35,9 +33,18 @@ export default {
       appKey:'007eJxTYHB5cOLCybbcvtTTk1MF/l2VvL48S/7JqrW/ove6fromEvpQgSHJNDnFMDkNCEzNTBKTTBNNUpLSDCxSjFPNU0wtkwyPL1ua3BDIyKB9JZuVkQECQXwWhoD8ZCMGBgChnyPc',
       channelName: 'Poc2',
       client: AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' }),
-      localStream: {},
+      localStream:{},
       // localStream: AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false}),
+      // localStream: {
+      //   uid: '',
+      //   camera: {
+      //     camId: '',
+      //     micId: '',
+      //     stream: {}
+      //   }
+      // },
 
+      uid: 0,
       devices: {
         cameras: [],
         mic: []
@@ -71,16 +78,35 @@ methods: {
     this.open= !this.open
 
     this.client.init(this.appId, () =>
-      console.log('AgoraRTC this.client initialized'));
-      let uidId = 0;
+    console.log('AgoraRTC this.client initialized'));
+
+    let uidId = 0;
+
+    // console.log(this.localStream)
+    // console.log('================= 98 =========================');
+    console.log('================= 1 =========================');
     this.client.join(this.appKey, this.channelName, null, (uid) => {
-      uidId = uid;
+      console.log('================= localStream =========================');
+
       this.localStream = AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false})
+
+      console.log(localStream)
+
+      uidId = uid;
+
+      // this.localStream = AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false})
+      // console.log('==========================================');
       console.log(`User ${uid} joined channel`);
+      // console.log('==========================================');
     });
+
+    // console.log('==========================================');
+    // console.log(this.localStream);
+    console.log('==================2========================');
 
 
     this.localStream.init(() => {
+      console.log('=================3=========================');
       console.log('Local stream initialized');
       this.localStream.play('video');
       this.client.publish(this.localStream, (err) =>
@@ -92,6 +118,7 @@ methods: {
       console.log("publish failed");
       console.error(err);
     });
+    console.log('==================4========================');
 
     this.client.on('stream-added', (evt) => {
       // const stream = evt.stream;
@@ -105,6 +132,7 @@ methods: {
       console.log("stream-added remote-uid: ", id);
       console.log(`Stream added:${evt}`)
     });
+    console.log('===================5=======================');
 
     this.client.on("stream-subscribed", function (evt) {
       var remoteStream = evt.stream;
@@ -118,6 +146,7 @@ methods: {
       remoteStream.play("remote_video_" + id);
       console.log("stream-subscribed remote-uid: ", id);
     });
+    console.log('================6==========================');
   },
 
   joinChannel() {
