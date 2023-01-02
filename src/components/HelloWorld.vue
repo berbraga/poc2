@@ -25,14 +25,14 @@ import AgoraRTC from "agora-rtc-sdk";
 
 
 export default {
-
+// b6a396427ce84882a61f8b7036de501a
   data(){
     return{
       open: false,
-      appId: 'b5cd1cffff564ab5a4dbf08d3e7d59b1',
-      appKey:'007eJxTYHB5cOLCybbcvtTTk1MF/l2VvL48S/7JqrW/ove6fromEvpQgSHJNDnFMDkNCEzNTBKTTBNNUpLSDCxSjFPNU0wtkwyPL1ua3BDIyKB9JZuVkQECQXwWhoD8ZCMGBgChnyPc',
-      channelName: 'Poc2',
-      client: AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' }),
+      appId: 'b6a396427ce84882a61f8b7036de501a',
+      appKey:'007eJxTYNh1QWzvyavrOEy+vd3z80mzTY7sk5rHMdlrrYLvXJr6yltUgSHRzCzR3CDZzNA0zdAkzSLJ0tDC0jQxxTDNJMnY0DzReMbPTckNgYwM7BH5LIwMEAjiszAU5CcbMTAAAEKPIeM=',
+      channelName: 'poc2',
+      // client: AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' }),
       localStream:{},
       // localStream: AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false}),
       // localStream: {
@@ -76,32 +76,33 @@ export default {
 methods: {
   enterVideo() {
     this.open= !this.open
+    let client =  AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' })
 
-    this.client.init(this.appId, () =>
+    client.init(this.appId, () =>
     console.log('AgoraRTC this.client initialized'));
 
     let uidId = 0;
 
     // console.log(this.localStream)
     // console.log('================= 98 =========================');
+
     console.log('================= 1 =========================');
-    this.client.join(this.appKey, this.channelName, null, (uid) => {
+
+    client.join(this.appKey, this.channelName, null, (uid) => {
+
       console.log('================= localStream =========================');
 
       this.localStream = AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false})
 
-      console.log(localStream)
+      console.log(this.localStream)
 
       uidId = uid;
 
-      // this.localStream = AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false})
-      // console.log('==========================================');
       console.log(`User ${uid} joined channel`);
-      // console.log('==========================================');
+    },(err) => {
+      console.log(err)
     });
 
-    // console.log('==========================================');
-    // console.log(this.localStream);
     console.log('==================2========================');
 
 
