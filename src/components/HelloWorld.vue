@@ -107,11 +107,11 @@ methods: {
 
 
     this.localStream.init(() => {
-      console.log('=================3=========================');
       console.log('Local stream initialized');
       this.localStream.play('video');
       this.client.publish(this.localStream, (err) =>
       console.log('Publish local stream error: ' + err));
+      console.log('=================3=========================');
     });
 
     // Publish the local stream
@@ -149,9 +149,13 @@ methods: {
     });
     console.log('================6==========================');
   },
+// use tokens for added security
+generateToken() {
+  return null; // TODO: add a token generation
+},
 
   joinChannel() {
-    var token = generateToken();
+    var token = this.generateToken();
     var userID = null; // set to null to auto generate uid on successfull connection
     // set the role
     this.client.setClientRole('host', function() {
