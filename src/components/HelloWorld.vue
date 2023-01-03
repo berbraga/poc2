@@ -29,26 +29,43 @@ export default {
   data(){
     return{
       open: false,
-      appId: 'b6a396427ce84882a61f8b7036de501a',
-      appKey:'007eJxTYNh1QWzvyavrOEy+vd3z80mzTY7sk5rHMdlrrYLvXJr6yltUgSHRzCzR3CDZzNA0zdAkzSLJ0tDC0jQxxTDNJMnY0DzReMbPTckNgYwM7BH5LIwMEAjiszAU5CcbMTAAAEKPIeM=',
-      channelName: 'poc2',
-      // client: AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' }),
+      // appId: 'b6a396427ce84882a61f8b7036de501a',
+      // appKey:'007eJxTYNh1QWzvyavrOEy+vd3z80mzTY7sk5rHMdlrrYLvXJr6yltUgSHRzCzR3CDZzNA0zdAkzSLJ0tDC0jQxxTDNJMnY0DzReMbPTckNgYwM7BH5LIwMEAjiszAU5CcbMTAAAEKPIeM=',
+      // channelName: 'poc2',
       localStream:{},
-      // localStream: AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false}),
-      // localStream: {
-      //   uid: '',
-      //   camera: {
-      //     camId: '',
-      //     micId: '',
-      //     stream: {}
-      //   }
-      // },
+
+      rtc: {
+        client: null,
+        joined: false,
+        published: false,
+        localStream: null,
+        remoteStreams: [],
+        params: {}
+      },
+      option: {
+        mode: "rtc",
+        codec: "h264",
+        appID: "b6a396427ce84882a61f8b7036de501a",
+        channel: "poc2",
+        uid: null,
+        token: "007eJxTYNh1QWzvyavrOEy+vd3z80mzTY7sk5rHMdlrrYLvXJr6yltUgSHRzCzR3CDZzNA0zdAkzSLJ0tDC0jQxxTDNJMnY0DzReMbPTckNgYwM7BH5LIwMEAjiszAU5CcbMTAAAEKPIeM="
+      },
 
       uid: 0,
       devices: {
         cameras: [],
         mic: []
       },
+      // client: AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' }),
+      // localStream: AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false}),
+      // localStream: {
+        //   uid: '',
+      //   camera: {
+      //     camId: '',
+      //     micId: '',
+      //     stream: {}
+      //   }
+      // },
 
       externalBroadcastUrl: '',
       injectedStreamURL: '',
@@ -78,19 +95,13 @@ methods: {
     this.open= !this.open
     let client =  AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' })
 
-    client.init(this.appId, () =>
+    client.init(this.option.appID, () =>
     console.log('AgoraRTC this.client initialized'));
 
     let uidId = 0;
 
-    // console.log(this.localStream)
-    // console.log('================= 98 =========================');
 
-    console.log('================= 1 =========================');
-
-    client.join(this.appKey, this.channelName, null, (uid) => {
-
-      console.log('================= localStream =========================');
+    client.join(this.option.token, this.option.channel, null, (uid) => {
 
       this.localStream = AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false})
 
@@ -103,7 +114,6 @@ methods: {
       console.log(err)
     });
 
-    console.log('==================2========================');
 
 
     this.localStream.init(() => {
@@ -155,7 +165,7 @@ generateToken() {
 },
 
   joinChannel() {
-    var token = this.generateToken();
+    var tokens = this.generateToken();
     var userID = null; // set to null to auto generate uid on successfull connection
     // set the role
     this.client.setClientRole('host', function() {
@@ -163,9 +173,9 @@ generateToken() {
     }, function(e) {
       console.log('setthis.ClientRole failed', e);
     });
-
+    console.log('=========================')
     // this.client.join(token, 'allThingsRTCLiveStream', 0, function(uid) {
-    this.client.join(token, channelName, userID, function(uid) {
+    this.client.join(tokens, this.option.channel, userID, function(uid) {
         createCameraStream(uid, {});
         this.localStreams.uid = uid; // keep track of the stream uid
         console.log('User ' + uid + ' joined channel successfully');
@@ -241,7 +251,7 @@ generateToken() {
 </script>
 
 <style scoped>
-  .outside {
+.outside {
     display: flex;
     align-content: center;
     justify-content: center;
@@ -251,15 +261,16 @@ generateToken() {
     height: 480px;
   }
   .player {
-   border: 1px black solid;
+    border: 1px black solid;
     display: flex;
     align-content: center;
-    justify-content: flex-end;
-    align-items: flex-end;
+    justify-content: flex-start;
+    align-items: flex-start;
     width: 1280px;
     height: 720px;
     border-width: 2px;
     border-radius: 4px;
+
   }
    .professional {
     position: absolute;
@@ -271,6 +282,4 @@ generateToken() {
     border-width: 2px;
     border-radius: 6px;
   }
-
-
 </style>
