@@ -45,7 +45,7 @@ export default {
         appID: "b6a396427ce84882a61f8b7036de501a",
         channel: "poc2",
         uid: null,
-        token: "007eJxTYNh1QWzvyavrOEy+vd3z80mzTY7sk5rHMdlrrYLvXJr6yltUgSHRzCzR3CDZzNA0zdAkzSLJ0tDC0jQxxTDNJMnY0DzReMbPTckNgYwM7BH5LIwMEAjiszAU5CcbMTAAAEKPIeM="
+        token: "007eJxTYLiw2HR6f0uwxcOjxxm+nT3/LHx1ovTEbBeuritrw/Zrdj9XYEg0M0s0N0g2MzRNMzRJs0iyNLSwNE1MMUwzSTI2NE80bsvcktwQyMjwSi2dhZEBAkF8FoaC/GQjBgYA0y0gtw=="
       },
 
       uid: 0,
@@ -60,6 +60,7 @@ export default {
 
 methods: {
   enterVideo() {
+    // console.log(this.option)
     this.open= !this.open
       // let client =  AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' })
     this.rtc.client = AgoraRTC.createClient({mode: this.option.mode, codec: this.option.codec});
@@ -127,10 +128,10 @@ methods: {
     });
 
   },
-// use tokens for added security
-generateToken() {
-  return null; // TODO: add a token generation
-},
+  // use tokens for added security
+  generateToken() {
+    return null; // TODO: add a token generation
+  },
 
   joinChannel() {
     var tokens = this.generateToken();
