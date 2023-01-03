@@ -25,163 +25,108 @@ import AgoraRTC from "agora-rtc-sdk";
 
 
 export default {
-// b6a396427ce84882a61f8b7036de501a
+  // appId: 'b6a396427ce84882a61f8b7036de501a'
+  // appKey: '007eJxTYNh1QWzvyavrOEy+vd3z80mzTY7sk5rHMdlrrYLvXJr6yltUgSHRzCzR3CDZzNA0zdAkzSLJ0tDC0jQxxTDNJMnY0DzReMbPTckNgYwM7BH5LIwMEAjiszAU5CcbMTAAAEKPIeM=',
+  // client: AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' }),
+  // localStream: AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false}),
+
   data(){
     return{
       open: false,
       appId: 'b6a396427ce84882a61f8b7036de501a',
-      appKey:'007eJxTYNh1QWzvyavrOEy+vd3z80mzTY7sk5rHMdlrrYLvXJr6yltUgSHRzCzR3CDZzNA0zdAkzSLJ0tDC0jQxxTDNJMnY0DzReMbPTckNgYwM7BH5LIwMEAjiszAU5CcbMTAAAEKPIeM=',
+      appKey:'007eJxTYLiw2HR6f0uwxcOjxxm+nT3/LHx1ovTEbBeuritrw/Zrdj9XYEg0M0s0N0g2MzRNMzRJs0iyNLSwNE1MMUwzSTI2NE80bsvcktwQyMjwSi2dhZEBAkF8FoaC/GQjBgYA0y0gtw==',
       channelName: 'poc2',
-      // client: AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' }),
-      localStream:{},
-      // localStream: AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false}),
-      // localStream: {
-      //   uid: '',
-      //   camera: {
-      //     camId: '',
-      //     micId: '',
-      //     stream: {}
-      //   }
-      // },
+      uidId: 0,
 
-      uid: 0,
-      devices: {
-        cameras: [],
-        mic: []
+      rtc:{
+        client: null,
+        joined: false,
+        published: false,
+        localStream: null,
+        remoteStreams: [],
+        params: {}
       },
-
-      externalBroadcastUrl: '',
-      injectedStreamURL: '',
-
-      defaultConfigRTMP: {
-        width: 640,
-        height: 360,
-        videoBitrate: 400,
-        videoFramerate: 15,
-        lowLatency: false,
-        audioSampleRate: 48000,
-        audioBitrate: 48,
-        audioChannels: 1,
-        videoGop: 30,
-        videoCodecProfile: 100,
-        userCount: 0,
-        userConfigExtraInfo: {},
-        backgroundColor: 0x000000,
-        transcodingUsers: [],
-      },
-
     }
   },
 
 methods: {
+
   enterVideo() {
     this.open= !this.open
-    let client =  AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' })
+    // Create a client
+      this.rtc.client = AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' })
 
-    client.init(this.appId, () =>
-    console.log('AgoraRTC this.client initialized'));
+      this.rtc.client.init(this.appId, () => {
+        console.log("init success");
+          }, (err) => {
+        console.error(err);
+      });
 
-    let uidId = 0;
+      // Join a channel
+      this.rtc.client.join(this.appKey, this.channelName, null, (uid) => {
+        this.uidId = uid;
+        console.log(`User ${uid} joined channel`);
+      },(err) => {
+        console.log(err)
+      });
 
-    // console.log(this.localStream)
-    // console.log('================= 98 =========================');
+      // Create a local stream
+      this.rtc.localStream = AgoraRTC.createStream({streamID: this.uidId, audio: true, video: true, screen: false})
 
-    console.log('================= 1 =========================');
+      this.rtc.localStream.init(() => {
+        console.log('Local stream initialized');
+        this.rtc.localStream.play('video');
+        this.rtc.client.publish(this.rtc.localStream, (err) =>
+        console.log('Publish local stream error: ' + err));
+      });
 
-    client.join(this.appKey, this.channelName, null, (uid) => {
+      // Publish the local stream
+      this.rtc.client.publish(this.rtc.localStream, function (err) {
+        console.log("publish failed");
+        console.error(err);
+      });
 
-      console.log('================= localStream =========================');
+      this.rtc.client.on('stream-added', (evt) => {
+        let remoteStream = evt.stream;
+        let id = remoteStream.getId();
+        if (id !== this.uidId) {
+          this.rtc.client.subscribe(remoteStream, function (err) {
+            console.log("stream subscribe failed", err);
+          });
+        }
+        console.log("stream-added remote-uid: ", id);
+        console.log(`Stream added:${evt}`)
+      });
 
-      this.localStream = AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false})
+      this.rtc.client.on("stream-subscribed", function (evt) {
+        let remoteStream = evt.stream;
+        let id = remoteStream.getId();
+        // Add a view for the remote stream.
+        let streamDiv =  document.createElement("div"); // Create a new div for every stream
+        streamDiv.id = id;                            // Assigning id to div
+        streamDiv.style.transform="rotateY(180deg)"; // Takes care of lateral inversion (mirror image)
+        remoteContainer.appendChild(streamDiv);
+        // Play the remote stream.
+        remoteStream.play("remote_video_" + id);
+        console.log("stream-subscribed remote-uid: ", id);
+      });
+    },
 
-      console.log(this.localStream)
-
-      uidId = uid;
-
-      console.log(`User ${uid} joined channel`);
-    },(err) => {
-      console.log(err)
-    });
-
-    console.log('==================2========================');
 
 
-    this.localStream.init(() => {
-      console.log('Local stream initialized');
-      this.localStream.play('video');
-      this.client.publish(this.localStream, (err) =>
-      console.log('Publish local stream error: ' + err));
-      console.log('=================3=========================');
-    });
+    generateToken() {
+      return null; // TODO: add a token generation
+    },
 
-    // Publish the local stream
-    this.client.publish(this.localStream, function (err) {
-      console.log("publish failed");
-      console.error(err);
-    });
-    console.log('==================4========================');
 
-    this.client.on('stream-added', (evt) => {
-      // const stream = evt.stream;
-      var remoteStream = evt.stream;
-      var id = remoteStream.getId();
-      if (id !== uidId) {
-        this.client.subscribe(remoteStream, function (err) {
-          console.log("stream subscribe failed", err);
-        });
-      }
-      console.log("stream-added remote-uid: ", id);
-      console.log(`Stream added:${evt}`)
-    });
-    console.log('===================5=======================');
 
-    this.client.on("stream-subscribed", function (evt) {
-      var remoteStream = evt.stream;
-      var id = remoteStream.getId();
-      // Add a view for the remote stream.
-      let streamDiv =  document.createElement("div"); // Create a new div for every stream
-      streamDiv.id = id;                            // Assigning id to div
-      streamDiv.style.transform="rotateY(180deg)"; // Takes care of lateral inversion (mirror image)
-      remoteContainer.appendChild(streamDiv);
-      // Play the remote stream.
-      remoteStream.play("remote_video_" + id);
-      console.log("stream-subscribed remote-uid: ", id);
-    });
-    console.log('================6==========================');
-  },
-// use tokens for added security
-generateToken() {
-  return null; // TODO: add a token generation
-},
-
-  joinChannel() {
-    var token = this.generateToken();
-    var userID = null; // set to null to auto generate uid on successfull connection
-    // set the role
-    this.client.setClientRole('host', function() {
-      console.log('this.Client role set as host.');
-    }, function(e) {
-      console.log('setthis.ClientRole failed', e);
-    });
-
-    // this.client.join(token, 'allThingsRTCLiveStream', 0, function(uid) {
-    this.client.join(token, channelName, userID, function(uid) {
-        createCameraStream(uid, {});
-        this.localStreams.uid = uid; // keep track of the stream uid
-        console.log('User ' + uid + ' joined channel successfully');
-    }, function(err) {
-        console.log('[ERROR] : join channel failed', err);
-    });
-  },
-
-// video streams for channel
-     createCameraStream(uid, deviceIds) {
+    createCameraStream(uid, deviceIds) {
       console.log('Creating stream with sources: ' + JSON.stringify(deviceIds));
 
-      this.localStream.setVideoProfile(cameraVideoProfile);
+      this.rtc.localStream.setVideoProfile(cameraVideoProfile);
 
       // The user has granted access to the camera and mic.
-      this.localStream.on("accessAllowed", function() {
+      this.rtc.localStream.on("accessAllowed", function() {
         if(devices.cameras.length === 0 && devices.mics.length === 0) {
           console.log('[DEBUG] : checking for cameras & mics');
           getCameraDevices();
@@ -190,13 +135,13 @@ generateToken() {
         console.log("accessAllowed");
       });
       // The user has denied access to the camera and mic.
-      this.localStream.on("accessDenied", function() {
+      this.rtc.localStream.on("accessDenied", function() {
         console.log("accessDenied");
       });
 
-      this.localStream.init(function() {
+      this.rtc.localStream.init(function() {
         console.log('getUserMedia successfully');
-        this.localStream.play('full-screen-video'); // play the local stream on the main div
+        this.rtc.localStream.play('full-screen-video'); // play the local stream on the main div
         // publish local stream
 
         if($.isEmptyObject(this.localStreams.camera.stream)) {
@@ -208,7 +153,7 @@ generateToken() {
           $("#exit-btn").prop("disabled", false);
         }
 
-        this.client.publish(this.localStream, function (err) {
+        this.rtc.client.publish(this.rtc.localStream, function (err) {
           console.log('[ERROR] : publish local stream error: ' + err);
         });
 
@@ -220,24 +165,55 @@ generateToken() {
 
 
 
-      leaveChannel() {
-        this.client.leave(function() {
-          console.log('this.client leaves channel');
-          this.localStream.stop() // stop the camera stream playback
-          this.localStream.close(); // clean up and close the camera stream
-          this.client.unpublish(this.localStream); // unpublish the camera stream
-          //disable the UI elements
-          $('#mic-btn').prop('disabled', true);
-          $('#video-btn').prop('disabled', true);
-          $('#exit-btn').prop('disabled', true);
-          $("#add-rtmp-btn").prop("disabled", true);
-          $("#rtmp-config-btn").prop("disabled", true);
-        }, function(err) {
-          console.log('this.client leave failed ', err); //error handling
-        });
-        }
-      },
-  }
+
+    joinChannel() {
+      var token = this.generateToken();
+      var userID = null; // set to null to auto generate uid on successfull connection
+      // set the role
+      this.rtc.client.setClientRole('host', function() {
+      }, function(e) {
+        console.log('set this.ClientRole failed', e);
+      });
+
+
+      // ERRO
+      this.rtc.client.join(token, this.channelName, userID, function(uid) {
+        console.log('=========1========')
+        this.createCameraStream(uid, {});
+        console.log('=========2========')
+        this.rtc.localStreams.uid = uid; // keep track of the stream uid
+        console.log('=========3========')
+        console.log('User ' + uid + ' joined channel successfully');
+      }, function(err) {
+        console.log('[ERROR] : join channel failed', err);
+      });
+
+
+    },
+
+
+
+    leaveChannel() {
+      console.log(this.rtc.localStream)
+       this.rtc.client.leave(function() {
+        this.rtc.localStream.stop() // stop the camera stream playback
+        console.log('=========passou aqui 2========')
+        this.rtc.localStream.close(); // clean up and close the camera stream
+        console.log('==== passou aqui 3 ====')
+        this.rtc.client.unpublish(this.rtc.localStream); // unpublish the camera stream
+        console.log('========passou aqui 4=========')
+        //disable the UI elements
+        $('#mic-btn').prop('disabled', true);
+        $('#video-btn').prop('disabled', true);
+        $('#exit-btn').prop('disabled', true);
+        $("#add-rtmp-btn").prop("disabled", true);
+        $("#rtmp-config-btn").prop("disabled", true);
+      }, function(err) {
+        console.log('this.rtc.client leave failed ', err); //error handling
+      });
+    }
+  },
+}
 </script>
 
 <style scoped>
