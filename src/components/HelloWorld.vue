@@ -62,7 +62,7 @@ methods: {
   enterVideo() {
     this.open= !this.open
       // let client =  AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' })
-    this.rtc.client = AgoraRTC.createClient({mode: option.mode, codec: option.codec});
+    this.rtc.client = AgoraRTC.createClient({mode: this.option.mode, codec: this.option.codec});
     this.rtc.client.init(this.option.appID, () =>
     console.log('AgoraRTC this.client initialized'));
 
@@ -89,7 +89,7 @@ methods: {
       this.rtc.localStream.play('video');
       this.rtc.client.publish(this.rtc.localStream, (err) =>
       console.log('Publish local stream error: ' + err));
-      console.log('=================3=========================');
+
     });
 
     // Publish the local stream
@@ -97,7 +97,7 @@ methods: {
       console.log("publish failed");
       console.error(err);
     });
-    console.log('==================4========================');
+
 
     this.rtc.client.on('stream-added', (evt) => {
       // const stream = evt.stream;
@@ -111,7 +111,7 @@ methods: {
       console.log("stream-added remote-uid: ", id);
       console.log(`Stream added:${evt}`)
     });
-    console.log('===================5=======================');
+
 
     this.rtc.client.on("stream-subscribed", function (evt) {
       var remoteStream = evt.stream;
@@ -125,7 +125,7 @@ methods: {
       remoteStream.play("remote_video_" + id);
       console.log("stream-subscribed remote-uid: ", id);
     });
-    console.log('================6==========================');
+
   },
 // use tokens for added security
 generateToken() {
