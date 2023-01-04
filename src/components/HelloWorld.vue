@@ -30,15 +30,16 @@ export default {
   // client: AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' }),
   // localStream: AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false}),
 
-  data(){
+  data() {
     return{
       open: false,
-      appId: 'b6a396427ce84882a61f8b7036de501a',
-      appKey:'007eJxTYLiw2HR6f0uwxcOjxxm+nT3/LHx1ovTEbBeuritrw/Zrdj9XYEg0M0s0N0g2MzRNMzRJs0iyNLSwNE1MMUwzSTI2NE80bsvcktwQyMjwSi2dhZEBAkF8FoaC/GQjBgYA0y0gtw==',
+      cameraVideoProfile: '1080p_3',
+      appId: 'b5cd1cffff564ab5a4dbf08d3e7d59b1',
+      appKey: '007eJxTYAjKep9kG13kmh65mjtgu4uZrAuTm8dHNen/01ZUpSseyVBgSDJNTjFMTgMCUzOTxCTTRJOUpDQDixTjVPMUU8skQ+8DW5MbAhkZzuWmMDIyQCCIz8JQkJ9sxMAAAKl/Hec=',
       channelName: 'poc2',
       uidId: 0,
 
-      rtc:{
+      rtc: {
         client: null,
         joined: false,
         published: false,
@@ -72,6 +73,7 @@ methods: {
 
       // Create a local stream
       this.rtc.localStream = AgoraRTC.createStream({streamID: this.uidId, audio: true, video: true, screen: false})
+      this.rtc.localStream.setVideoProfile(this.cameraVideoProfile);
 
       this.rtc.localStream.init(() => {
         console.log('Local stream initialized');
@@ -123,7 +125,6 @@ methods: {
     createCameraStream(uid, deviceIds) {
       console.log('Creating stream with sources: ' + JSON.stringify(deviceIds));
 
-      this.rtc.localStream.setVideoProfile(cameraVideoProfile);
 
       // The user has granted access to the camera and mic.
       this.rtc.localStream.on("accessAllowed", function() {
@@ -175,8 +176,7 @@ methods: {
         console.log('set this.ClientRole failed', e);
       });
 
-
-      // ERRO
+      // ERRO (Client already in connecting/connected state)
       this.rtc.client.join(token, this.channelName, userID, function(uid) {
         console.log('=========1========')
         this.createCameraStream(uid, {});
@@ -187,11 +187,7 @@ methods: {
       }, function(err) {
         console.log('[ERROR] : join channel failed', err);
       });
-
-
     },
-
-
 
     leaveChannel() {
       console.log(this.rtc.localStream)
