@@ -70,13 +70,9 @@ methods: {
     let uidId = 0;
 
     this.rtc.client.join(this.option.token, this.option.channel, null, (uid) => {
-
       this.rtc.localStream = AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false})
-
       console.log(this.rtc.localStream)
-
       uidId = uid;
-
       console.log(`User ${uid} joined channel`);
     },(err) => {
       console.log(err)
