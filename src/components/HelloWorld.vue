@@ -128,6 +128,7 @@ methods: {
 
       // The user has granted access to the camera and mic.
       this.rtc.localStream.on("accessAllowed", function() {
+      this.rtc.localStream.on("accessAllowed", function() {
         if(devices.cameras.length === 0 && devices.mics.length === 0) {
           console.log('[DEBUG] : checking for cameras & mics');
           getCameraDevices();
@@ -137,11 +138,14 @@ methods: {
       });
       // The user has denied access to the camera and mic.
       this.rtc.localStream.on("accessDenied", function() {
+      this.rtc.localStream.on("accessDenied", function() {
         console.log("accessDenied");
       });
 
       this.rtc.localStream.init(function() {
+      this.rtc.localStream.init(function() {
         console.log('getUserMedia successfully');
+        this.rtc.localStream.play('full-screen-video'); // play the local stream on the main div
         this.rtc.localStream.play('full-screen-video'); // play the local stream on the main div
         // publish local stream
 
@@ -154,6 +158,7 @@ methods: {
           $("#exit-btn").prop("disabled", false);
         }
 
+        this.rtc.client.publish(this.rtc.localStream, function (err) {
         this.rtc.client.publish(this.rtc.localStream, function (err) {
           console.log('[ERROR] : publish local stream error: ' + err);
         });
