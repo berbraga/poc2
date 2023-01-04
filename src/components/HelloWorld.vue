@@ -69,7 +69,6 @@ methods: {
 
     let uidId = 0;
 
-
     this.rtc.client.join(this.option.token, this.option.channel, null, (uid) => {
 
       this.rtc.localStream = AgoraRTC.createStream({streamID: uid, audio: true, video: true, screen: false})
@@ -82,7 +81,7 @@ methods: {
     },(err) => {
       console.log(err)
     });
-
+    console.log(this.rtc)
 
 
     this.rtc.localStream.init(() => {
