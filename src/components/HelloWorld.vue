@@ -8,12 +8,12 @@
 
   <div v-if="this.open === true">
     <div class="outside">
-      <div class="player">
+      <!-- <div class="player"> -->
         <!-- <iframe width="1280" height="720" src="https://www.youtube.com/embed/KCc4TEbZCmc" title="O TRANSMISSOR de RÁDIO MAIS SIMPLES do MUNDO!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
-        <div class="professional">
+        <!-- <div class="professional"> -->
           <div id="video"></div>
-        </div>
-      </div>
+        <!-- </div> -->
+      <!-- </div> -->
     </div>
   </div>
 
@@ -70,10 +70,19 @@ methods: {
       },(err) => {
         console.log(err)
       });
-
       // Create a local stream
       this.rtc.localStream = AgoraRTC.createStream({streamID: this.uidId, audio: true, video: true, screen: false})
+      console.log(this.rtc.localStream)
       this.rtc.localStream.setVideoProfile(this.cameraVideoProfile);
+
+      // videoElesnt.style.height = "100%";
+
+      // this.rtc.client.setVideoProfile(this.cameraVideoProfile, {
+      //   width: 720,
+      //   height: 500,
+      //   frameRate: 15,
+      //   bitrate: 500
+      // });
 
       this.rtc.localStream.init(() => {
         console.log('Local stream initialized');
@@ -105,8 +114,8 @@ methods: {
         let id = remoteStream.getId();
         // Add a view for the remote stream.
         let streamDiv =  document.createElement("div"); // Create a new div for every stream
-        streamDiv.id = id;                            // Assigning id to div
-        streamDiv.style.transform="rotateY(180deg)"; // Takes care of lateral inversion (mirror image)
+        streamDiv.id = id;                              // Assigning id to div
+        streamDiv.style.transform="rotateY(180deg)";    // Takes care of lateral inversion (mirror image)
         remoteContainer.appendChild(streamDiv);
         // Play the remote stream.
         remoteStream.play("remote_video_" + id);
@@ -114,20 +123,14 @@ methods: {
       });
     },
 
-
-
     generateToken() {
       return null; // TODO: add a token generation
     },
 
-
-
     createCameraStream(uid, deviceIds) {
       console.log('Creating stream with sources: ' + JSON.stringify(deviceIds));
 
-
       // The user has granted access to the camera and mic.
-      this.rtc.localStream.on("accessAllowed", function() {
       this.rtc.localStream.on("accessAllowed", function() {
         if(devices.cameras.length === 0 && devices.mics.length === 0) {
           console.log('[DEBUG] : checking for cameras & mics');
@@ -136,20 +139,18 @@ methods: {
         }
         console.log("accessAllowed");
       });
+
       // The user has denied access to the camera and mic.
-      this.rtc.localStream.on("accessDenied", function() {
       this.rtc.localStream.on("accessDenied", function() {
         console.log("accessDenied");
       });
 
       this.rtc.localStream.init(function() {
-      this.rtc.localStream.init(function() {
         console.log('getUserMedia successfully');
-        this.rtc.localStream.play('full-screen-video'); // play the local stream on the main div
         this.rtc.localStream.play('full-screen-video'); // play the local stream on the main div
         // publish local stream
 
-        if($.isEmptyObject(this.localStreams.camera.stream)) {
+        if(this.isEmptyObject(this.localStreams.camera.stream)) {
           enableUiControls(this.localStream); // move after testing
         } else {
           //reset controls
@@ -159,7 +160,6 @@ methods: {
         }
 
         this.rtc.client.publish(this.rtc.localStream, function (err) {
-        this.rtc.client.publish(this.rtc.localStream, function (err) {
           console.log('[ERROR] : publish local stream error: ' + err);
         });
 
@@ -168,9 +168,6 @@ methods: {
         console.log('[ERROR] : getUserMedia failed', err);
       });
     },
-
-
-
 
     joinChannel() {
       var token = this.generateToken();
